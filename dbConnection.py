@@ -13,7 +13,7 @@ class DBConfig(QDialog):
  
     def DBConnection(self):
         try:
-            db = mdb.connect('10.190.42.172', 'vmms', 'vmms123', 'vmms_db')
+            db = mdb.connect('x.x.x.x', 'x', 'x', 'x')
             return db
  
         except mdb.Error as e:
