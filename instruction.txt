@@ -1,0 +1,5 @@
+###Required Library or Tools###
+python 3
+pip install pyqt5
+pip install pyqt5-tools
+pip install paramiko

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mainLayout</class>
+ <widget class="QMainWindow" name="mainLayout">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>637</width>
+    <height>506</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Server Monitoring &amp; Maintenance Tools</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>icon.png</normaloff>icon.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>images/logout.jpg</normaloff>images/logout.jpg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>30</width>
+      <height>30</height>
+     </size>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>637</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionLogin"/>
+    <addaction name="actionLogout"/>
+   </widget>
+   <widget class="QMenu" name="menuMonitoring">
+    <property name="title">
+     <string>Monitoring</string>
+    </property>
+    <addaction name="actionServer"/>
+    <addaction name="actionMemcached_Server"/>
+    <addaction name="actionMisc"/>
+    <addaction name="cmdExeMenu"/>
+   </widget>
+   <widget class="QMenu" name="menuControlling">
+    <property name="title">
+     <string>Controlling</string>
+    </property>
+    <addaction name="actionApplication_Server"/>
+    <addaction name="actionMemcached_Server_2"/>
+    <addaction name="actionMisc_2"/>
+   </widget>
+   <widget class="QMenu" name="menuConfiguration">
+    <property name="title">
+     <string>Configuration</string>
+    </property>
+    <addaction name="actionServer_Config"/>
+    <addaction name="actionOthers"/>
+   </widget>
+   <widget class="QMenu" name="menuPatching">
+    <property name="title">
+     <string>Patching</string>
+    </property>
+    <addaction name="actionServer_2"/>
+    <addaction name="actionApplication"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help?</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuUser_Mgt">
+    <property name="title">
+     <string>Report</string>
+    </property>
+    <addaction name="phServerInfo"/>
+    <addaction name="usrInfo"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuMonitoring"/>
+   <addaction name="menuControlling"/>
+   <addaction name="menuConfiguration"/>
+   <addaction name="menuPatching"/>
+   <addaction name="menuUser_Mgt"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionLogin">
+   <property name="text">
+    <string>Login</string>
+   </property>
+  </action>
+  <action name="actionLogout">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Logout</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionServer">
+   <property name="text">
+    <string>Application Server</string>
+   </property>
+  </action>
+  <action name="actionMemcached_Server">
+   <property name="text">
+    <string>Memcached Server</string>
+   </property>
+  </action>
+  <action name="actionMisc">
+   <property name="text">
+    <string>Misc</string>
+   </property>
+  </action>
+  <action name="actionApplication_Server">
+   <property name="text">
+    <string>Application Server</string>
+   </property>
+  </action>
+  <action name="actionMemcached_Server_2">
+   <property name="text">
+    <string>Memcached Server</string>
+   </property>
+  </action>
+  <action name="actionMisc_2">
+   <property name="text">
+    <string>Misc</string>
+   </property>
+  </action>
+  <action name="actionServer_Config">
+   <property name="text">
+    <string>Server Config</string>
+   </property>
+  </action>
+  <action name="actionOthers">
+   <property name="text">
+    <string>Others</string>
+   </property>
+  </action>
+  <action name="actionServer_2">
+   <property name="text">
+    <string>Server</string>
+   </property>
+  </action>
+  <action name="actionApplication">
+   <property name="text">
+    <string>Application</string>
+   </property>
+  </action>
+  <action name="cmdExeMenu">
+   <property name="text">
+    <string>Command Execute</string>
+   </property>
+  </action>
+  <action name="phServerInfo">
+   <property name="text">
+    <string>Physical Server Info</string>
+   </property>
+  </action>
+  <action name="usrInfo">
+   <property name="text">
+    <string>User Information</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionLogout</sender>
+   <signal>triggered()</signal>
+   <receiver>mainLayout</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>224</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
