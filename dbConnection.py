@@ -13,7 +13,7 @@ class DBConfig(QDialog):
  
     def DBConnection(self):
         try:
-            db = mdb.connect('x.x.x.x', 'x', 'x', 'x')
+            db = mdb.connect('10.190.42.172', 'vmms', 'vmms123', 'vmms_db')
             return db
  
         except mdb.Error as e:
@@ -21,11 +21,12 @@ class DBConfig(QDialog):
     
     def loginForm(self, userName, usrPass):
         if self.DBConnection() != False :
-            result = self.DBConnection().cursor()
-            query = ("SELECT username, password FROM user_tbl WHERE username = '%s'" %str(userName) + " AND password = '%s'" %str(usrPass))
-            # get_password = ("SELECT password FROM users WHERE password = '%s'"%str(usrPass).md5())
-            result_output = result.execute(query)
-            if result_output == 1 :
+            connectString = self.DBConnection().cursor()
+            query = ("SELECT username, isactive FROM user_tbl WHERE username = '%s'" %str(userName) + " AND password = '%s'" %str(usrPass))
+            result = connectString.execute(query)
+            data = connectString.fetchall()
+            # print(data[0][1])
+            if result == 1 :
                 return True
             else:
                 self.closedConnection()
@@ -58,6 +59,28 @@ class DBConfig(QDialog):
             QMessageBox.question(self, "Database Info !!!", "Database Connection Established Error", QMessageBox.Ok)
             sys.exit(1)
 
+    def appServerIp(self):
+        if self.DBConnection() != False :
+            connectString = self.DBConnection().cursor()
+            query = ("SELECT vm_ip FROM vm_server_tbl")
+            connectString.execute(query)
+            result = connectString.fetchall()
+            return result
+        else:
+            QMessageBox.question(self, "Database Info !!!", "Database Connection Established Error", QMessageBox.Ok)
+            sys.exit(1)
+
+    def appServerInfo(self, vm_ip):
+        if self.DBConnection() != False :
+            connectString = self.DBConnection().cursor()
+            query = ("SELECT ph.ps_ip, vm.vm_name, vm.vm_os_version, vm.vm_is_hardening, vm.vm_tomcat_location, vm.isactive FROM vm_server_tbl AS vm, physical_server_tbl AS ph WHERE vm.vm_ip= '%s' " %str(vm_ip) + " AND ph.ps_id = vm.ps_id")
+            connectString.execute(query)
+            result = connectString.fetchall()
+            # print(result)
+            return result
+        else:
+            QMessageBox.question(self, "Database Info !!!", "Database Connection Established Error", QMessageBox.Ok)
+            sys.exit(1)
 # App = QApplication(sys.argv)
 # window = DBConfig()
 # window.loginForm()
