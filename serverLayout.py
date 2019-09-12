@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, uic, QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication , QPushButton, QToolTip, QMessageBox, QTableWidgetItem
 import sys, os, re, paramiko
 from subprocess import Popen, PIPE
-# from login import *
+from commandExecute import *
 from test import *
 from dbConnection import *
 
@@ -23,6 +23,11 @@ class MainWindow(QMainWindow):
 		self.ui.phServerInfo.triggered.connect(self.phServerReport)
 		self.ui.usrInfo.triggered.connect(self.userInfo)
 		self.ui.cmdExeMenu.triggered.connect(self.cmdEnv)
+		self.ui.actionServer.triggered.connect(self.appServerInfo)
+
+	def appServerInfo(self):
+		self.appServerInfo = AppServerInfo()
+		self.appServerInfo.show()
 		
 	def is_valid_ip(self, ip):
 		m = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", ip)
@@ -92,6 +97,7 @@ class CmdEnv(QMainWindow):
 		self.ui.homeMenu.triggered.connect(self.forwardLayout)
 			
 	def btnExecute(self):
+		self.comExe = CommandExe()
 		self.ui.display.setText("")
 		target_host = self.ui.hostIp.text()
 		# target_port = 22
@@ -100,20 +106,24 @@ class CmdEnv(QMainWindow):
 		cmd = self.ui.cmdLine.text()
 		if target_host == "" or un == "" or pwd == "" or cmd == "":
 			QMessageBox.question(self, "Execution Info !!!", "You have missed any of field", QMessageBox.Ok)
+		elif self.comExe.sshConnect(target_host, un, pwd,cmd) == False :
+			QMessageBox.question(self, 'Wrong IP', "You typed: " + target_host, QMessageBox.Ok, QMessageBox.Ok)
 		else:
-			self.sshConnect(target_host, un, pwd,cmd)
+			self.ui.display.append(self.comExe.sshConnect(target_host, un, pwd,cmd))
 
 	def sshConnect(self, target_host, un, pwd,cmd):
-		ssh = paramiko.SSHClient()
-		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+		myconn = paramiko.SSHClient()
+		myconn.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		target_port = 22
 		
 		self.mainLayout = MainWindow()
 		if self.mainLayout.is_valid_ip(str(target_host)) :
-			ssh.connect( hostname = target_host , username = un, password = pwd )
-			stdin, stdout, stderr = ssh.exec_command(str(cmd))
-			txt = "%s" %(stdout.read())
-			self.ui.display.append(txt)
+			myconn.connect( hostname = target_host , port=22, username = un, password = pwd, look_for_keys=False,
+                allow_agent=False )
+			stdin, stdout, stderr = myconn.exec_command(str(cmd))
+			# mystr = stdout.read().decode(encoding='UTF-8')
+			mystr = "%s" %(stdout.read().decode(encoding='UTF-8'))
+			self.ui.display.append(mystr)
 			
 		else:
 			QMessageBox.question(self, 'Wrong IP', "You typed: " + target_host, QMessageBox.Ok, QMessageBox.Ok)
@@ -206,6 +216,60 @@ class PhyServerInfo(QDialog):
 
 	def exitWindow(self):
 		self.PhInfoUi.hide()
+
+class AppServerInfo(QMainWindow):
+	def __init__(self, parent=None):
+		super().__init__()
+
+		self.appServerInfo = uic.loadUi('appServerInfo.ui', self)
+		self.dbcon = DBConfig()
+		self.appServerInfo.virtualIp.activated.connect(self.loadAppServerIP)
+		self.populateIp()
+
+	def loadAppServerIP(self):
+		self.comExe = CommandExe()
+		currIP = self.appServerInfo.virtualIp.currentText()
+		data = self.dbCon.appServerInfo(currIP)
+		self.appServerInfo.virIP.setText(currIP)
+		if data:
+			try:
+				self.appServerInfo.PhIP.setText(data[0][0])
+				self.appServerInfo.vmName.setText(data[0][1])
+				self.appServerInfo.osVersion.setText(data[0][2])
+				self.appServerInfo.hardenStatus.setText(data[0][3])
+				self.appServerInfo.appLocation.setText(data[0][4])
+				if data[0][5] == 1:
+					self.appServerInfo.serverStatus.setText("Active")
+				elif data[0][5] == 2 :
+					self.appServerInfo.serverStatus.setText("Inactive")
+				else:
+					self.appServerInfo.serverStatus.setText("Not Updated")
+
+				###########Check Running Application and Tomcat ########
+				if not data[0][4] :
+					cmd ="ls -l /opt/tomcat/webapps/ |  awk '{print $9}'"
+					self.appServerInfo.appList.setText(self.comExe.sshConnect(currIP,"root","!bbl@2Q17",cmd))
+					
+				else:
+					cmd = "service tomcat status | grep 'running'"
+					tomStatus = self.comExe.sshConnect(currIP,"root","!bbl@2Q17",cmd)
+					if tomStatus == "" :
+						self.appServerInfo.tomcatStatus.setText("Not Running")
+					else:
+						self.appServerInfo.tomcatStatus.setText("Running")
+
+					txt = data[0][4]
+					cmd = "ls -l '%s'" %str(txt) + " |  awk '{print $9}'"
+					self.appServerInfo.appList.setText(self.comExe.sshConnect(currIP,"root","!bbl@2Q17",cmd))
+			except:
+				QMessageBox.question(self, 'Exception Info', "Out of Index", QMessageBox.Ok, QMessageBox.Ok)
+
+
+	def populateIp(self):
+		# data = self.dbCon.appServerIp()
+		self.dbCon = DBConfig()
+		for ip in self.dbCon.appServerIp() :
+			self.appServerInfo.virtualIp.addItem(ip[0])
 
 '''
 if __name__=="__main__":
